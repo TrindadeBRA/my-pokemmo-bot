@@ -1,4 +1,11 @@
 import robot from 'robotjs';
+import sharp from 'sharp';
+import fs from 'fs';
+
+const path = require('path');
+const ReadText = require('text-from-image');
+
+var Tesseract = require('tesseract.js');
 
 export default async function handler(req, res) {
     try {
@@ -13,27 +20,84 @@ export default async function handler(req, res) {
         robot.moveMouse(startX, startY);
         robot.mouseClick();
 
-        // await sleep(1500);
+        // Aguarde um pouco para garantir que a captura da tela seja concluída
+        await sleep(1000);
 
-        // await curarPokemons();
+        // Tesseract.recognize(
+        //     'https://i.imgur.com/R5uBt1z.png',
+        //     'eng',
+        //     { logger: m => console.log(m) }
+        // ).then(({ data: { text } }) => {
+        //     console.log(text);
+        // })
 
-        // await sairDoPokestop();
+        // Capturar a tela na posição atual do mouse
+        const screen = robot.screen.capture(0, 860, 450, 150);
 
-        // await irAteOSpot();
+        // Verificar se a captura de tela é válida
+        if (!screen || !screen.image) {
+            throw new Error('Falha ao capturar a tela');
+        }
 
-        // await procurarPokemon();
-        // await batalhar();
-        // await sleep(5000);
-        // await batalhar();
+        // Obtenha a data atual
+        const dataAtual = new Date();
+
+        // Formate a data para YYYYMMDDHHMMSS
+        const dataFormatada = dataAtual.toISOString().replace(/[^0-9]/g, '');
 
 
-        // await olhaeEEntrarNoLagoComSurf();
+        // Salvar a imagem capturada como JPEG
+        const imagesDir = path.resolve(process.cwd(), 'public/images');
+        if (!fs.existsSync(imagesDir)) {
+            fs.mkdirSync(imagesDir, { recursive: true });
+        }
 
-        // await batalhar5Vezes();
+        const imageName = `screenshot_${dataFormatada}.jpg`;
+        const imagePath = path.resolve(imagesDir, imageName);
+        
+        await sharp(Buffer.from(screen.image), { raw: { width: screen.width, height: screen.height, channels: 4 } })
+            .jpeg({ quality: 100 })
+            .toFile(imagePath);
 
-        // await sairDoLago();
+        // console.log('Imagem salva como JPEG:', imagePath);
 
-        // await entrarNoPokestop();
+        console.log('Imagem salva como JPEG:', imagePath);
+
+        const { data: { text } } = await Tesseract.recognize(
+            imagePath,
+            'eng',
+            // { logger: m => console.log(m) }
+        );      
+
+        // console.log(text);
+
+        
+        // // Verificar se o texto corresponde ao padrão desejado
+        const regex = /\[Battle\] The wild (.+?) fainted!/;
+        const match = text.match(regex);
+
+        if (match) {
+            const pokemonName = match[1];
+            console.log(`o nome do pokemon é ${pokemonName} !`);
+            // Faça o que for necessário com o nome do Pokémon encontrado
+        } else {
+            console.log('Padrão não encontrado.');
+        }
+
+        // // Verificar se o texto corresponde ao padrão desejado
+        // const regex = /\[Battle\] The wild (.+?) fainted!/;
+        // const match = text.match(regex);
+
+        // if (match) {
+        //     const pokemonName = match[1];
+        //     console.log(`Encontrado: [Battle] The wild ${pokemonName} fainted!`);
+        //     // Faça o que for necessário com o nome do Pokémon encontrado
+        // } else {
+        //     console.log('Padrão não encontrado.');
+        // }
+
+
+
 
         res.status(200).json({ message: 'Bot concluído.' });
     } catch (error) {
@@ -44,208 +108,4 @@ export default async function handler(req, res) {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function sairDoPokestop() {
-    //Sair do pokecenter
-    pressKeyForDuration('down', 50);
-    await sleep(1000);
-    pressKeyForDuration('down', 50);
-    await sleep(1000);
-    pressKeyForDuration('down', 50);
-    await sleep(1000);
-    pressKeyForDuration('down', 50);
-    await sleep(1000);
-    pressKeyForDuration('down', 50);
-    await sleep(1000);
-    pressKeyForDuration('down', 50);
-    await sleep(2500);
-}
-
-async function irAteOSpot() {
-    //Ir até o mato
-    pressKeyForDuration('left', 50);
-    await sleep(1000);
-    pressKeyForDuration('left', 50);
-    await sleep(1000);
-    pressKeyForDuration('left', 50);
-    await sleep(1000);
-    pressKeyForDuration('left', 50);
-    await sleep(1000);
-    pressKeyForDuration('left', 50);
-
-    await sleep(1000);
-    pressKeyForDuration('down', 50);
-    await sleep(1000);
-    pressKeyForDuration('down', 50);
-    await sleep(1000);
-    pressKeyForDuration('down', 50);
-    await sleep(1000);
-    pressKeyForDuration('down', 50);
-    await sleep(1000);
-    pressKeyForDuration('down', 50);
-
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-
-    await sleep(1000);
-    pressKeyForDuration('up', 50);
-    await sleep(1000);
-    pressKeyForDuration('up', 50);
-    await sleep(1000);
-    pressKeyForDuration('up', 50);
-    await sleep(1000);
-    pressKeyForDuration('up', 50);
-    await sleep(1000);
-    pressKeyForDuration('up', 50);
-
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(1000);
-    pressKeyForDuration('right', 50);
-    await sleep(2500);
-}
-
-async function procurarPokemon() {
-
-    for (let i = 0; i < 3; i++) {
-
-        pressKeyForDuration('right', 50);
-        await sleep(500);
-        pressKeyForDuration('up', 50);
-        await sleep(500);
-        pressKeyForDuration('left', 50);
-        await sleep(500);
-        pressKeyForDuration('down', 50);
-        await sleep(500);
-
-    }
-
-    await sleep(2500);
-}
-
-async function batalhar() {
-    for (let i = 0; i < 1; i++) {
-
-        // Clique no ultimo pkmn 
-        robot.moveMouse(1891, 663);
-        robot.mouseClick();
-        await sleep(500);
-
-        // Use o ataque 
-        robot.moveMouse(1751, 869);
-        robot.mouseClick();
-        await sleep(15000);
-
-
-        pressKeyForDuration('z', 50);
-        await sleep(1000);
-        pressKeyForDuration('z', 50);
-        await sleep(1000);
-        pressKeyForDuration('z', 50);
-        await sleep(1000);
-        pressKeyForDuration('z', 50);
-        await sleep(30000);
-
-        pressKeyForDuration('z', 50);
-        await sleep(1000);
-        pressKeyForDuration('right', 50);
-        await sleep(1000);
-        pressKeyForDuration('z', 50);
-        await sleep(1000);
-
-
-
-    }
-    await sleep(2500);
-}
-
-async function sairDoLago() {
-    //Sair do lago
-    pressKeyForDuration('down', 50);
-    await sleep(2500);
-}
-
-async function curarPokemons() {
-    // Curar Pokemons
-    for (let i = 0; i < 7; i++) {
-        robot.keyTap('z');
-        await sleep(1200);
-    }
-}
-
-async function entrarNoPokestop() {
-
-    //Ir a porta do pokestop
-    pressKeyForDuration('left', 50);
-    await sleep(1000);
-    pressKeyForDuration('left', 50);
-    await sleep(1000);
-    pressKeyForDuration('left', 50);
-    await sleep(1000);
-    pressKeyForDuration('left', 50);
-    await sleep(1000);
-    pressKeyForDuration('left', 50);
-    await sleep(2500);
-
-    //Entrar
-    pressKeyForDuration('up', 50);
-    await sleep(1000);
-    pressKeyForDuration('up', 50);
-    await sleep(2500);
-
-    //Andar até pokestop
-    pressKeyForDuration('up', 50);
-    await sleep(1000);
-    pressKeyForDuration('up', 50);
-    await sleep(1000);
-    pressKeyForDuration('up', 50);
-    await sleep(1000);
-    pressKeyForDuration('up', 50);
-    await sleep(1000);
-    pressKeyForDuration('up', 50);
-    await sleep(2500);
-
-}
-
-async function pressKeyForDuration(key, duration) {
-    return new Promise((resolve) => {
-        // Pressionar a tecla
-        robot.keyToggle(key, 'down');
-
-        // Aguardar a duração especificada
-        setTimeout(() => {
-            // Soltar a tecla após a duração
-            robot.keyToggle(key, 'up');
-            resolve();
-        }, duration);
-    });
 }
