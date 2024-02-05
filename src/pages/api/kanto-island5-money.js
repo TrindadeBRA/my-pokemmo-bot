@@ -43,9 +43,9 @@ export default async function handler(req, res) {
                     const imagePath = await gameplayHudPrintAndSave();
                     canFight = await checkIfCanFight(imagePath);
                     await sleep(500);
+                    await deleteImage(imagePath);
                 }
 
-                await deleteImage(imagePath);
 
                 pressKeyForDuration('z', 50);
                 await sleep(1000);
@@ -60,9 +60,9 @@ export default async function handler(req, res) {
                     const imagePath = await gameplayHudPrintAndSave();
                     canFight = await checkIfCanFight(imagePath);
                     await sleep(500);
+                    await deleteImage(imagePath);
                 }
 
-                await deleteImage(imagePath);
 
                 pressKeyForDuration('z', 50);
                 await sleep(1000);
@@ -77,9 +77,9 @@ export default async function handler(req, res) {
                     const imagePath = await gameplayHudPrintAndSave();
                     isFinalBattle = await checkIsFinalBattle(imagePath);
                     await sleep(500);
+                    await deleteImage(imagePath);
                 }
 
-                await deleteImage(imagePath);
         
                 await sleep(5000);
 
