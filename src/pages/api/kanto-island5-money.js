@@ -9,6 +9,9 @@ var Tesseract = require('tesseract.js');
 
 export default async function handler(req, res) {
     try {
+        //307,110
+        //21:33
+
         // Obtenha as coordenadas atuais do mouse
         const { x, y } = robot.getMousePos();
 
@@ -20,86 +23,73 @@ export default async function handler(req, res) {
         robot.moveMouse(startX, startY);
         robot.mouseClick();
 
-        // Aguarde um pouco para garantir que a captura da tela seja concluída
-        await sleep(1000);
+        // await removeAllPrints();
 
-        // Tesseract.recognize(
-        //     'https://i.imgur.com/R5uBt1z.png',
-        //     'eng',
-        //     { logger: m => console.log(m) }
-        // ).then(({ data: { text } }) => {
-        //     console.log(text);
-        // })
+        for (let i = 0; i < 10; i++) {
 
-        // Capturar a tela na posição atual do mouse
-        const screen = robot.screen.capture(0, 860, 450, 150);
+            await sleep(1000);
 
-        // Verificar se a captura de tela é válida
-        if (!screen || !screen.image) {
-            throw new Error('Falha ao capturar a tela');
-        }
+            await curarPokemons();
 
-        // Obtenha a data atual
-        const dataAtual = new Date();
+            await sairDoPokestop();
 
-        // Formate a data para YYYYMMDDHHMMSS
-        const dataFormatada = dataAtual.toISOString().replace(/[^0-9]/g, '');
+            await irAteOSpot();
 
+            //Farm
+            for (let i = 0; i < 4; i++) {
 
-        // Salvar a imagem capturada como JPEG
-        const imagesDir = path.resolve(process.cwd(), 'public/images');
-        if (!fs.existsSync(imagesDir)) {
-            fs.mkdirSync(imagesDir, { recursive: true });
-        }
+                await sleep(1000);
 
-        const imageName = `screenshot_${dataFormatada}.jpg`;
-        const imagePath = path.resolve(imagesDir, imageName);
+                await sweetScent();
+
+                let canFight = null;
+
+                while (canFight === false || canFight === null) {
+                    const imagePath = await gameplayHudPrintAndSave();
+                    canFight = await checkIfCanFight(imagePath);
+                    await sleep(500);
+                }
+
+                pressKeyForDuration('z', 50);
+                await sleep(1000);
+                pressKeyForDuration('z', 50);
+                await sleep(1000);
+                pressKeyForDuration('z', 50);
+                await sleep(1000);
+                pressKeyForDuration('z', 50);
+
+                canFight = null;
+                while (canFight === false || canFight === null) {
+                    const imagePath = await gameplayHudPrintAndSave();
+                    canFight = await checkIfCanFight(imagePath);
+                    await sleep(500);
+                }
+
+                pressKeyForDuration('z', 50);
+                await sleep(1000);
+                pressKeyForDuration('right', 50);
+                await sleep(1000);
+                pressKeyForDuration('z', 50);
+                await sleep(1000);
+                pressKeyForDuration('z', 50);
+
+                let isFinalBattle = null;
+                while (isFinalBattle === false || isFinalBattle === null) {
+                    const imagePath = await gameplayHudPrintAndSave();
+                    isFinalBattle = await checkIsFinalBattle(imagePath);
+                    await sleep(500);
+                }
         
-        await sharp(Buffer.from(screen.image), { raw: { width: screen.width, height: screen.height, channels: 4 } })
-            .jpeg({ quality: 100 })
-            .toFile(imagePath);
+                await sleep(5000);
 
-        // console.log('Imagem salva como JPEG:', imagePath);
+            }
 
-        console.log('Imagem salva como JPEG:', imagePath);
-
-        const { data: { text } } = await Tesseract.recognize(
-            imagePath,
-            'eng',
-            // { logger: m => console.log(m) }
-        );      
-
-        // console.log(text);
-
-        
-        // // Verificar se o texto corresponde ao padrão desejado
-        const regex = /\[Battle\] The wild (.+?) fainted!/;
-        const match = text.match(regex);
-
-        if (match) {
-            const pokemonName = match[1];
-            console.log(`o nome do pokemon é ${pokemonName} !`);
-            // Faça o que for necessário com o nome do Pokémon encontrado
-        } else {
-            console.log('Padrão não encontrado.');
+            await voltarAoPokestop();
+            await entrarNoPokestop();
         }
 
-        // // Verificar se o texto corresponde ao padrão desejado
-        // const regex = /\[Battle\] The wild (.+?) fainted!/;
-        // const match = text.match(regex);
-
-        // if (match) {
-        //     const pokemonName = match[1];
-        //     console.log(`Encontrado: [Battle] The wild ${pokemonName} fainted!`);
-        //     // Faça o que for necessário com o nome do Pokémon encontrado
-        // } else {
-        //     console.log('Padrão não encontrado.');
-        // }
-
-
-
-
-        res.status(200).json({ message: 'Bot concluído.' });
+        
+        res.status(200).json({ message: "Bot concluido!" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Ocorreu um erro no bot.' });
@@ -108,4 +98,331 @@ export default async function handler(req, res) {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function curarPokemons() {
+    // Curar Pokemons
+    for (let i = 0; i < 7; i++) {
+        robot.keyTap('z');
+        await sleep(1200);
+    }
+}
+
+async function sairDoPokestop() {
+    //Sair do pokecenter
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(2500);
+}
+
+async function entrarNoPokestop() {
+    //Sair do pokecenter
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(2500);
+}
+
+async function irAteOSpot() {
+    //Ir até o mato
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+
+    await sleep(2500);
+}
+
+async function voltarAoPokestop() {
+    //Ir até o pokestop
+
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+    await sleep(1000);
+    pressKeyForDuration('down', 50);
+
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+    await sleep(1000);
+    pressKeyForDuration('left', 50);
+
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+
+
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+    await sleep(1000);
+    pressKeyForDuration('right', 50);
+
+    await sleep(1000);
+    pressKeyForDuration('up', 50);
+
+
+    await sleep(2500);
+}
+
+async function sweetScent() {
+    // Clique no ultimo pkmn 
+    robot.moveMouse(1894, 663);
+    robot.mouseClick();
+    await sleep(500);
+
+    // Use o ataque 
+    robot.moveMouse(1794, 787);
+    robot.mouseClick();
+    // await sleep(15000);
+
+    await sleep(2500);
+}
+
+async function chatPrintAndSave() {
+    // Capturar a tela na posição atual do mouse
+    const screen = robot.screen.capture(0, 860, 450, 150);
+
+    // Verificar se a captura de tela é válida
+    if (!screen || !screen.image) {
+        throw new Error('Falha ao capturar a tela');
+    }
+
+    // Obtenha a data atual
+    const dataAtual = new Date();
+
+    // Formate a data para YYYYMMDDHHMMSS
+    const dataFormatada = dataAtual.toISOString().replace(/[^0-9]/g, '');
+
+
+    // Salvar a imagem capturada como JPEG
+    const imagesDir = path.resolve(process.cwd(), 'public/images/chat');
+    if (!fs.existsSync(imagesDir)) {
+        fs.mkdirSync(imagesDir, { recursive: true });
+    }
+
+    const imageName = `screenshot_${dataFormatada}.jpg`;
+    const imagePath = path.resolve(imagesDir, imageName);
+
+    await sharp(Buffer.from(screen.image), { raw: { width: screen.width, height: screen.height, channels: 4 } })
+        .jpeg({ quality: 100 })
+        .toFile(imagePath);
+
+    // console.log('Imagem salva como JPEG:', imagePath);
+
+    return imagePath;
+}
+
+async function gameplayHudPrintAndSave() {
+    // Capturar a tela na posição atual do mouse
+    const screen = robot.screen.capture(280, 650, 450, 150);
+
+    // Verificar se a captura de tela é válida
+    if (!screen || !screen.image) {
+        throw new Error('Falha ao capturar a tela');
+    }
+
+    // Obtenha a data atual
+    const dataAtual = new Date();
+
+    // Formate a data para YYYYMMDDHHMMSS
+    const dataFormatada = dataAtual.toISOString().replace(/[^0-9]/g, '');
+
+
+    // Salvar a imagem capturada como JPEG
+    const imagesDir = path.resolve(process.cwd(), 'public/images/hud');
+    if (!fs.existsSync(imagesDir)) {
+        fs.mkdirSync(imagesDir, { recursive: true });
+    }
+
+    const imageName = `screenshot_${dataFormatada}.jpg`;
+    const imagePath = path.resolve(imagesDir, imageName);
+
+    await sharp(Buffer.from(screen.image), { raw: { width: screen.width, height: screen.height, channels: 4 } })
+        .jpeg({ quality: 100 })
+        .toFile(imagePath);
+
+    // console.log('Imagem salva como JPEG:', imagePath);
+
+    return imagePath;
+}
+
+async function pressKeyForDuration(key, duration) {
+    return new Promise((resolve) => {
+        // Pressionar a tecla
+        robot.keyToggle(key, 'down');
+
+        // Aguardar a duração especificada
+        setTimeout(() => {
+            // Soltar a tecla após a duração
+            robot.keyToggle(key, 'up');
+            resolve();
+        }, duration);
+    });
+}
+
+async function checkIfCanFight(imagePath) {
+
+    const { data: { text } } = await Tesseract.recognize(
+        imagePath,
+        'eng'
+    );
+
+    // console.log(text);
+
+    const regex = /\bFIGHT\b/;
+    const match = text.match(regex);
+
+    return match
+}
+async function checkIsFinalBattle(imagePath) {
+
+    const { data: { text } } = await Tesseract.recognize(
+        imagePath,
+        'eng'
+    );
+
+    // console.log(text);
+
+    const regex = /\bgained\b/;
+    const match = text.match(regex);
+
+    return match
+}
+
+async function removeAllPrints() {
+    const pasta = path.join(__dirname, 'public', 'images', 'hud');
+    fs.readdir(pasta, (err, files) => {
+        if (err) {
+        console.error('Erro ao ler a pasta:', err);
+        return;
+        }
+    
+        // Itera sobre os arquivos e os exclui
+        files.forEach((file) => {
+        const filePath = path.join(pasta, file);
+    
+        // Exclui o arquivo
+        fs.unlink(filePath, (err) => {
+            if (err) {
+            console.error('Erro ao excluir o arquivo:', err);
+            } else {
+            console.log('Arquivo excluído com sucesso:', filePath);
+            }
+        });
+        });
+    });
 }
