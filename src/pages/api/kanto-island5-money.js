@@ -50,6 +50,8 @@ export default async function handler(req, res) {
                     await sleep(500);
                 }
 
+                await removeAllPrints();
+
                 pressKeyForDuration('z', 50);
                 await sleep(1000);
                 pressKeyForDuration('z', 50);
@@ -65,6 +67,8 @@ export default async function handler(req, res) {
                     await sleep(500);
                 }
 
+                await removeAllPrints();
+
                 pressKeyForDuration('z', 50);
                 await sleep(1000);
                 pressKeyForDuration('right', 50);
@@ -79,6 +83,8 @@ export default async function handler(req, res) {
                     isFinalBattle = await checkIsFinalBattle(imagePath);
                     await sleep(500);
                 }
+
+                await removeAllPrints();
         
                 await sleep(5000);
 
@@ -404,25 +410,29 @@ async function checkIsFinalBattle(imagePath) {
 }
 
 async function removeAllPrints() {
-    const pasta = path.join(__dirname, 'public', 'images', 'hud');
-    fs.readdir(pasta, (err, files) => {
-        if (err) {
-        console.error('Erro ao ler a pasta:', err);
-        return;
-        }
-    
-        // Itera sobre os arquivos e os exclui
-        files.forEach((file) => {
-        const filePath = path.join(pasta, file);
-    
-        // Exclui o arquivo
-        fs.unlink(filePath, (err) => {
+    const folders = ['hud', 'chat'];
+
+    folders.forEach((folder) => {
+        const pasta = path.join(__dirname, 'public', 'images', folder);
+        fs.readdir(pasta, (err, files) => {
             if (err) {
-            console.error('Erro ao excluir o arquivo:', err);
-            } else {
-            console.log('Arquivo excluído com sucesso:', filePath);
+                console.error(`Erro ao ler a pasta ${folder}:`, err);
+                return;
             }
-        });
+
+            // Itera sobre os arquivos e os exclui
+            files.forEach((file) => {
+                const filePath = path.join(pasta, file);
+
+                // Exclui o arquivo
+                fs.unlink(filePath, (err) => {
+                    if (err) {
+                        console.error(`Erro ao excluir o arquivo ${filePath}:`, err);
+                    } else {
+                        console.log(`Arquivo excluído com sucesso: ${filePath}`);
+                    }
+                });
+            });
         });
     });
 }

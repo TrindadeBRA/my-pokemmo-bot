@@ -3,18 +3,18 @@ import { useEffect, useState } from 'react';
 
 const Home: React.FC = () => {
 
-  useEffect(() => {
-    const handleClick = (event) => {
-      const { clientX, clientY } = event;
-      console.log('Coordenadas do clique:', { x: clientX, y: clientY });
-    };
+  // useEffect(() => {
+  //   const handleClick = (event) => {
+  //     const { clientX, clientY } = event;
+  //     console.log('Coordenadas do clique:', { x: clientX, y: clientY });
+  //   };
 
-    document.addEventListener('click', handleClick);
+  //   document.addEventListener('click', handleClick);
 
-    return () => {
-      document.removeEventListener('click', handleClick);
-    };
-  }, []);
+  //   return () => {
+  //     document.removeEventListener('click', handleClick);
+  //   };
+  // }, []);
 
   
   const [botStatus, setBotStatus] = useState<string | null>(null);
