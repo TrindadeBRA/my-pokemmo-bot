@@ -9,9 +9,6 @@ var Tesseract = require('tesseract.js');
 
 export default async function handler(req, res) {
     try {
-        //307,110
-        //21:33
-
         // Obtenha as coordenadas atuais do mouse
         const { x, y } = robot.getMousePos();
 
@@ -22,8 +19,6 @@ export default async function handler(req, res) {
         // Mover o mouse para a posição inicial
         robot.moveMouse(startX, startY);
         robot.mouseClick();
-
-        // await removeAllPrints();
 
         for (let i = 0; i < 10; i++) {
 
@@ -50,7 +45,7 @@ export default async function handler(req, res) {
                     await sleep(500);
                 }
 
-                await removeAllPrints();
+                await deleteImage(imagePath);
 
                 pressKeyForDuration('z', 50);
                 await sleep(1000);
@@ -67,7 +62,7 @@ export default async function handler(req, res) {
                     await sleep(500);
                 }
 
-                await removeAllPrints();
+                await deleteImage(imagePath);
 
                 pressKeyForDuration('z', 50);
                 await sleep(1000);
@@ -84,7 +79,7 @@ export default async function handler(req, res) {
                     await sleep(500);
                 }
 
-                await removeAllPrints();
+                await deleteImage(imagePath);
         
                 await sleep(5000);
 
@@ -409,30 +404,11 @@ async function checkIsFinalBattle(imagePath) {
     return match
 }
 
-async function removeAllPrints() {
-    const folders = ['hud', 'chat'];
-
-    folders.forEach((folder) => {
-        const pasta = path.join(__dirname, 'public', 'images', folder);
-        fs.readdir(pasta, (err, files) => {
-            if (err) {
-                console.error(`Erro ao ler a pasta ${folder}:`, err);
-                return;
-            }
-
-            // Itera sobre os arquivos e os exclui
-            files.forEach((file) => {
-                const filePath = path.join(pasta, file);
-
-                // Exclui o arquivo
-                fs.unlink(filePath, (err) => {
-                    if (err) {
-                        console.error(`Erro ao excluir o arquivo ${filePath}:`, err);
-                    } else {
-                        console.log(`Arquivo excluído com sucesso: ${filePath}`);
-                    }
-                });
-            });
-        });
-    });
+async function deleteImage(imagePath) {
+    try {
+        fs.unlinkSync(imagePath);
+        console.log(`Imagem deletada: ${imagePath}`);
+    } catch (error) {
+        console.error(`Erro ao deletar imagem: ${error.message}`);
+    }
 }
