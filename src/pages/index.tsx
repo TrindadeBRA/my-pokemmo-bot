@@ -2,35 +2,27 @@
 import { useEffect, useState } from 'react';
 
 const Home: React.FC = () => {
-
-  // useEffect(() => {
-  //   const handleClick = (event) => {
-  //     const { clientX, clientY } = event;
-  //     console.log('Coordenadas do clique:', { x: clientX, y: clientY });
-  //   };
-
-  //   document.addEventListener('click', handleClick);
-
-  //   return () => {
-  //     document.removeEventListener('click', handleClick);
-  //   };
-  // }, []);
-
-  
   const [botStatus, setBotStatus] = useState<string | null>(null);
+
+  // const [logs, setLogs] = useState<string[]>([]);
 
   const runBot = async () => {
     try {
-      const response = await fetch('/api/kanto-island5-money');
+      const response = await fetch('/api/roadmaps/test');
       const data = await response.json();
+
       setBotStatus(data.message);
+      // setLogs(data.logs);
     } catch (error) {
       console.error(error);
       setBotStatus('Erro ao executar o bot.');
     }
   };
 
-
+  // useEffect(() => {
+  //   // Aqui você pode processar e exibir os logs conforme necessário
+  //   console.log("Logs:", logs);
+  // }, [logs]);
 
   return (
     <div>
@@ -42,3 +34,4 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
