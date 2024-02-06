@@ -22,7 +22,7 @@ const Home = () => {
 
         // Lidar com o evento de conclusão
         socket.on('completion', () => {
-            setProgress('Bot concluído! - Informado pelo WebSocket');
+            setProgress('Bot concluído!');
             setBotRunning(false); // Define o estado do bot como não em execução após a conclusão
         });
 
