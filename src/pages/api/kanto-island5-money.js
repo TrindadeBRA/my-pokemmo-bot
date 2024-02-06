@@ -280,15 +280,8 @@ async function voltarAoPokestop() {
 }
 
 async function sweetScent() {
-    // Clique no ultimo pkmn 
-    robot.moveMouse(1894, 663);
-    robot.mouseClick();
-    await sleep(500);
+    pressKeyForDuration('9', 50);
 
-    // Use o ataque 
-    robot.moveMouse(1794, 787);
-    robot.mouseClick();
-    // await sleep(15000);
 
     await sleep(2500);
 }
