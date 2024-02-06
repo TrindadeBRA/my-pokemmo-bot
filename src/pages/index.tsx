@@ -35,6 +35,7 @@ const Home = () => {
     const runBot = async () => {
         // Emitir um evento para iniciar o bot
         setBotRunning(true); // Define o estado do bot como em execução
+        // const response = await fetch('http://localhost:3000/api/roadmaps/test');
         const response = await fetch('http://localhost:3000/api/roadmaps/test');
         if (!response.ok) {
             console.error('Erro ao iniciar o bot.');
